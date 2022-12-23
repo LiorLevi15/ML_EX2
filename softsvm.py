@@ -5,30 +5,6 @@ import matplotlib.pyplot as plt
 
 
 # todo: complete the following functions, you may add auxiliary functions or define class to help you
-class LinearClassifier:
-    def __init__(self, l, trainX: np.array, trainY: np.array):
-        self.l = l
-        self.trainY = trainY
-        self.trainX = trainX
-        self.d = trainX.shape[1]
-        self.m = trainX.shape[0]
-        self.u, self.v, self.A, self.H = self.init_matrices()
-
-    def init_matrices(self):
-        u = matrix([matrix(0.0, (self.d, 1)), matrix(1 / self.m, (self.m, 1))])
-        v = matrix([matrix(1.0, (self.m, 1)), matrix(0.0, (self.m, 1))])
-        xy_np = np.array([self.trainY[i] * self.trainX[i] for i in range(self.m)])
-        xy = matrix(xy_np)
-        I_m = spmatrix(1.0, range(self.m), range(self.m))
-        zero_MxD = spmatrix([], [], [], (self.m, self.d))
-        A = sparse([[xy, zero_MxD], [I_m, I_m]])
-        I_d = spmatrix(1.0, range(self.d), range(self.d))
-        zero_DxM = spmatrix([], [], [], (self.d, self.m))
-        zero_MxM = spmatrix([], [], [], (self.m, self.m))
-        H = sparse([[2 * self.l * I_d, zero_MxD], [zero_DxM, zero_MxM]])
-
-        return u, v, A, H
-
 
 def test():
     # load question 2 data
@@ -85,7 +61,9 @@ def test():
     # print(u.typecode != 'd' or u.size[1] != 1)
     #
     sol = cvxopt.solvers.qp(H, u, -A, -v)
-    print(sol["x"])
+    print(sol["x"][:d])
+    tes = matrix(range(10), (10, 1))
+    print(tes[:8])
 
 
 def softsvm(l, trainX: np.array, trainy: np.array):
@@ -96,50 +74,23 @@ def softsvm(l, trainX: np.array, trainy: np.array):
     :param trainy: numpy array of size (m, 1) containing the labels of the training sample
     :return: linear predictor w, a numpy array of size (d, 1)
     """
+    # calc dimentions
     d = trainX.shape[1]
     m = trainy.shape[0]
     u = matrix([matrix(0.0, (d, 1)), matrix(1 / m, (m, 1))])
     v = matrix([matrix(1.0, (m, 1)), matrix(0.0, (m, 1))])
-    # print(u)
-    # print(u.size)
-    # print(v)
-    # print(v.size)
-    # print(_trainX.shape)
-    # print(_trainy.shape)
     xy_np = np.array([trainy[i] * trainX[i] for i in range(m)])
-    # print(xy_np.shape)
     xy = matrix(xy_np)
-    # print(xy.size)
     I_m = spmatrix(1.0, range(m), range(m))
-    # print(I_m)
-    # print(I_m.size)
     zero_MxD = spmatrix([], [], [], (m, d))
-    # print(zero_MxD)
-    # print(zero_MxD.size)
     A = sparse([[xy, zero_MxD], [I_m, I_m]])
-    # print(A)
-    # print(A.size)
     I_d = spmatrix(1.0, range(d), range(d))
     zero_DxM = spmatrix([], [], [], (d, m))
     zero_MxM = spmatrix([], [], [], (m, m))
     H = sparse([[2 * l * I_d, zero_MxD], [zero_DxM, zero_MxM]])
-    # print(H)
-    # print(H.size)
-    # print(H.typecode)
-    # print(u.typecode)
-    # print(A.typecode)
-    # print(v.typecode)
-    #
-    # print(u.__class__)
-    # print(not isinstance(u,matrix))
-    # print(u.typecode != 'd' or u.size[1] != 1)
-    #
+
     sol = cvxopt.solvers.qp(H, u, -A, -v)
-    print(sol["x"])
-    """
-    need to extract w from sol["x"]
-    """
-    raise NotImplementedError()
+    return np.array(sol["x"][:d])
 
 
 def simple_test():
@@ -175,7 +126,7 @@ def simple_test():
 
 if __name__ == '__main__':
     # before submitting, make sure that the function simple_test runs without errors
-    # simple_test()
+    simple_test()
 
     # here you may add any code that uses the above functions to solve question 2
-    test()
+    # test()
