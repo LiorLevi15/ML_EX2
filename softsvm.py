@@ -4,92 +4,35 @@ from cvxopt import solvers, matrix, spmatrix, spdiag, sparse
 import matplotlib.pyplot as plt
 
 
-# todo: complete the following functions, you may add auxiliary functions or define class to help you
-
-def test():
-    # load question 2 data
-    data = np.load('EX2q2_mnist.npz')
-    trainX = data['Xtrain']
-    testX = data['Xtest']
-    trainy = data['Ytrain']
-    testy = data['Ytest']
-
-    m = 100
-    d = trainX.shape[1]
-    l = 2
-
-    # Get a random m training examples from the training set
-    indices = np.random.permutation(trainX.shape[0])
-    _trainX = trainX[indices[:m]]
-    _trainy = trainy[indices[:m]]
-
-    # print(matrix(_trainX))
-    u = matrix([matrix(0.0, (d, 1)), matrix(1/m, (m, 1))])
-    v = matrix([matrix(1.0, (m, 1)), matrix(0.0, (m, 1))])
-    # print(u)
-    # print(u.size)
-    # print(v)
-    # print(v.size)
-    # print(_trainX.shape)
-    # print(_trainy.shape)
-    xy_np = np.array([_trainy[i] * _trainX[i] for i in range(_trainy.shape[0])])
-    # print(xy_np.shape)
-    xy = matrix(xy_np)
-    # print(xy.size)
-    I_m = spmatrix(1.0, range(m), range(m))
-    # print(I_m)
-    # print(I_m.size)
-    zero_MxD = spmatrix([], [], [], (m, d))
-    # print(zero_MxD)
-    # print(zero_MxD.size)
-    A = sparse([[xy, zero_MxD], [I_m, I_m]])
-    # print(A)
-    # print(A.size)
-    I_d = spmatrix(1.0, range(d), range(d))
-    zero_DxM = spmatrix([], [], [], (d, m))
-    zero_MxM = spmatrix([], [], [], (m, m))
-    H = sparse([[2*l*I_d, zero_MxD], [zero_DxM, zero_MxM]])
-    # print(H)
-    # print(H.size)
-    # print(H.typecode)
-    # print(u.typecode)
-    # print(A.typecode)
-    # print(v.typecode)
-    #
-    # print(u.__class__)
-    # print(not isinstance(u,matrix))
-    # print(u.typecode != 'd' or u.size[1] != 1)
-    #
-    sol = cvxopt.solvers.qp(H, u, -A, -v)
-    print(sol["x"][:d])
-    tes = matrix(range(10), (10, 1))
-    print(tes[:8])
-
-
 def softsvm(l, trainX: np.array, trainy: np.array):
     """
-
     :param l: the parameter lambda of the soft SVM algorithm
     :param trainX: numpy array of size (m, d) containing the training sample
     :param trainy: numpy array of size (m, 1) containing the labels of the training sample
     :return: linear predictor w, a numpy array of size (d, 1)
     """
-    # calc dimentions
+    # calc dimensions
     d = trainX.shape[1]
     m = trainy.shape[0]
+    # init vectors v and u
     u = matrix([matrix(0.0, (d, 1)), matrix(1 / m, (m, 1))])
     v = matrix([matrix(1.0, (m, 1)), matrix(0.0, (m, 1))])
+    # init blocks for block metrix A
     xy_np = np.array([trainy[i] * trainX[i] for i in range(m)])
     xy = matrix(xy_np)
     I_m = spmatrix(1.0, range(m), range(m))
     zero_MxD = spmatrix([], [], [], (m, d))
+    # init A
     A = sparse([[xy, zero_MxD], [I_m, I_m]])
+    # init blocks for block metrix H
     I_d = spmatrix(1.0, range(d), range(d))
     zero_DxM = spmatrix([], [], [], (d, m))
     zero_MxM = spmatrix([], [], [], (m, m))
+    # init H
     H = sparse([[2 * l * I_d, zero_MxD], [zero_DxM, zero_MxM]])
-
+    # solve
     sol = cvxopt.solvers.qp(H, u, -A, -v)
+    # return only w from solution z vector
     return np.array(sol["x"][:d])
 
 
@@ -129,4 +72,3 @@ if __name__ == '__main__':
     simple_test()
 
     # here you may add any code that uses the above functions to solve question 2
-    # test()
