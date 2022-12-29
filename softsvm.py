@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 
 def test():
     # load question 2 data
-    data = np.load('EX2q2_mnist.npz')
+    data = np.load('ex2q2_mnist.npz')
     trainX = data['Xtrain']
     testX = data['Xtest']
     trainy = data['Ytrain']
@@ -26,40 +26,40 @@ def test():
     # print(matrix(_trainX))
     u = matrix([matrix(0.0, (d, 1)), matrix(1/m, (m, 1))])
     v = matrix([matrix(1.0, (m, 1)), matrix(0.0, (m, 1))])
-    # print(u)
-    # print(u.size)
-    # print(v)
-    # print(v.size)
-    # print(_trainX.shape)
-    # print(_trainy.shape)
+    print(u)
+    print(u.size)
+    print(v)
+    print(v.size)
+    print(_trainX.shape)
+    print(_trainy.shape)
     xy_np = np.array([_trainy[i] * _trainX[i] for i in range(_trainy.shape[0])])
-    # print(xy_np.shape)
+    print(xy_np.shape)
     xy = matrix(xy_np)
-    # print(xy.size)
+    print(xy.size)
     I_m = spmatrix(1.0, range(m), range(m))
-    # print(I_m)
-    # print(I_m.size)
+    print(I_m)
+    print(I_m.size)
     zero_MxD = spmatrix([], [], [], (m, d))
-    # print(zero_MxD)
-    # print(zero_MxD.size)
+    print(zero_MxD)
+    print(zero_MxD.size)
     A = sparse([[xy, zero_MxD], [I_m, I_m]])
-    # print(A)
-    # print(A.size)
+    print(A)
+    print(A.size)
     I_d = spmatrix(1.0, range(d), range(d))
     zero_DxM = spmatrix([], [], [], (d, m))
     zero_MxM = spmatrix([], [], [], (m, m))
     H = sparse([[2*l*I_d, zero_MxD], [zero_DxM, zero_MxM]])
-    # print(H)
-    # print(H.size)
-    # print(H.typecode)
-    # print(u.typecode)
-    # print(A.typecode)
-    # print(v.typecode)
-    #
-    # print(u.__class__)
-    # print(not isinstance(u,matrix))
-    # print(u.typecode != 'd' or u.size[1] != 1)
-    #
+    print(H)
+    print(H.size)
+    print(H.typecode)
+    print(u.typecode)
+    print(A.typecode)
+    print(v.typecode)
+
+    print(u.__class__)
+    print(not isinstance(u,matrix))
+    print(u.typecode != 'd' or u.size[1] != 1)
+
     sol = cvxopt.solvers.qp(H, u, -A, -v)
     print(sol["x"][:d])
     tes = matrix(range(10), (10, 1))
@@ -95,7 +95,7 @@ def softsvm(l, trainX: np.array, trainy: np.array):
 
 def simple_test():
     # load question 2 data
-    data = np.load('EX2q2_mnist.npz')
+    data = np.load('ex2q2_mnist.npz')
     trainX = data['Xtrain']
     testX = data['Xtest']
     trainy = data['Ytrain']
@@ -126,7 +126,7 @@ def simple_test():
 
 if __name__ == '__main__':
     # before submitting, make sure that the function simple_test runs without errors
-    simple_test()
+    test()
 
     # here you may add any code that uses the above functions to solve question 2
     # test()

@@ -1,24 +1,72 @@
+import cvxopt
 import numpy as np
+import numpy.linalg.linalg
 from cvxopt import solvers, matrix, spmatrix, spdiag, sparse
 import matplotlib.pyplot as plt
 
-
 # todo: complete the following functions, you may add auxiliary functions or define class to help you
-def softsvmpoly(l: float, k: int, trainX: np.array, trainy: np.array):
-    """
-
+"""
     :param l: the parameter lambda of the soft SVM algorithm
     :param sigma: the bandwidth parameter sigma of the RBF kernel.
     :param trainX: numpy array of size (m, d) containing the training sample
     :param trainy: numpy array of size (m, 1) containing the labels of the training sample
     :return: numpy array of size (m, 1) which describes the coefficients found by the algorithm
-    """
-    raise NotImplementedError()
+   """
+
+
+def softsvmpoly(l: float, k: int, trainX: np.array, trainy: np.array):
+    epsilon = 0.000000001
+    m = trainX.shape[0]
+    d = trainX.shape[1]
+    gramMatrix = getGramMatrix(trainX, k)
+    I_m = spmatrix(1.0, range(m), range(m))
+    zero_mXm = spmatrix(0.0, range(m), range(m))
+    G = np.block([[2 * l * gramMatrix, np.zeros((m, m))], [np.zeros((m, m)), np.zeros((m, m))]]) + epsilon * np.eye(2*m)
+
+    # print("VALS ARE:::::::")
+    # for i in numpy.linalg.linalg.eigvals(G):
+    #     if i <= 0:
+    #         print(i)
+    # print("VALS ARE:::::::")
+
+    u = matrix([matrix(0.0, (m, 1)), matrix(1 / m, (m, 1))])
+    v = matrix([matrix(0.0, (m, 1)), matrix(1.0, (m, 1))])
+    subMetrix_yXG = np.zeros((m, m))
+    for i in range(m):
+        y_i = trainy[i]
+        g_i = gramMatrix[i]
+        for j in range(m):
+            subMetrix_yXG[i, j] = y_i * g_i[j]
+    A = sparse([[zero_mXm, matrix(subMetrix_yXG)], [I_m, I_m]])
+    # print(u.trans())
+    # print(u)
+    # print(v)
+    # print(A)
+    # print(G)
+    # print(G)
+    # print(u.trans()*G*u)
+
+    sol = cvxopt.solvers.qp(matrix(G), u, -A, -v)
+    # print(np.array(sol["x"][:m]))
+    return np.array(sol["x"][:m])
+
+
+def polynomialKernel(x1: np.array, x2: np.array, k: int):
+    return pow((1 + x1 @ x2), k)
+
+
+def getGramMatrix(trainX: np.array, k: int):
+    m = trainX.shape[0]
+    gramMatrix = np.zeros((m, m))
+    for i in range(m):
+        for j in range(m):
+            gramMatrix[i, j] = polynomialKernel(trainX[i], trainX[j], k)
+    return gramMatrix
 
 
 def simple_test():
     # load question 2 data
-    data = np.load('EX2q2_mnist.npz')
+    data = np.load('ex2q4_data.npz')
     trainX = data['Xtrain']
     testX = data['Xtest']
     trainy = data['Ytrain']
@@ -36,11 +84,13 @@ def simple_test():
 
     # tests to make sure the output is of the intended class and shape
     assert isinstance(w, np.ndarray), "The output of the function softsvmbf should be a numpy array"
-    assert w.shape[0] == 1 and w.shape[1] == 1, f"The shape of the output should be ({m}, 1)"
+    assert w.shape[0] == m and w.shape[1] == 1, f"The shape of the output should be ({m}, 1)"
 
 
 if __name__ == '__main__':
     # before submitting, make sure that the function simple_test runs without errors
     simple_test()
-
+    # trainX = np.array([[1, 0, 1], [1, 1, 0], [1, 0, 0]])
+    # trainY = np.array([1, -1, 1])
+    # softsvmpoly(1, 1, trainX, trainY)
     # here you may add any code that uses the above functions to solve question 4
