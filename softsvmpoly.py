@@ -15,13 +15,14 @@ import matplotlib.pyplot as plt
 
 
 def softsvmpoly(l: float, k: int, trainX: np.array, trainy: np.array):
-    epsilon = 0.000000001
+    epsilon = 0.000001
     m = trainX.shape[0]
     d = trainX.shape[1]
     gramMatrix = getGramMatrix(trainX, k)
     I_m = spmatrix(1.0, range(m), range(m))
     zero_mXm = spmatrix(0.0, range(m), range(m))
-    G = np.block([[2 * l * gramMatrix, np.zeros((m, m))], [np.zeros((m, m)), np.zeros((m, m))]]) + epsilon * np.eye(2*m)
+    G = np.block([[2 * l * gramMatrix, np.zeros((m, m))], [np.zeros((m, m)), np.zeros((m, m))]]) + epsilon * np.eye(
+        2 * m)
 
     # print("VALS ARE:::::::")
     # for i in numpy.linalg.linalg.eigvals(G):
