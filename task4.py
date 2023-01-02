@@ -194,7 +194,7 @@ def getVectorRepresentation(k: int, w: list):
     res = "["
     for i, t in enumerate(cases):
         b = format(math.sqrt(mulitnomial(k, t)) * w[i], '.2f')
-        res += (f"{b}*x(1)^{t[1]}*x(2)^{t[2]}, ")
+        res += f"{b}*x(1)^{t[1]}*x(2)^{t[2]}, "
     return res + "]"
 
 
